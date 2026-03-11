@@ -1,0 +1,71 @@
+{
+  "name": "express-prisma-starter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clean backend starter with Express, Prisma, PostgreSQL, and TypeScript",
+  "packageManager": "pnpm@10.8.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "postinstall": "pnpm db:generate",
+    "dev": "pnpm exec tsx watch src/server.ts",
+    "build": "pnpm exec tsc -p tsconfig.json && pnpm exec tsx tools/copy-generated.ts",
+    "start": "node dist/src/server.js",
+    "type-check": "pnpm exec tsc --noEmit",
+    "lint": "pnpm exec eslint src prisma tests vitest.config.ts --ext .ts",
+    "lint:fix": "pnpm exec eslint src prisma tests vitest.config.ts --ext .ts --fix",
+    "format": "pnpm exec prettier --check .",
+    "format:write": "pnpm exec prettier --write .",
+    "test": "pnpm exec vitest run",
+    "test:watch": "pnpm exec vitest",
+    "db:generate": "pnpm exec prisma generate",
+    "db:migrate": "pnpm exec prisma migrate dev",
+    "db:migrate:deploy": "pnpm exec prisma migrate deploy",
+    "db:push": "pnpm exec prisma db push",
+    "db:seed": "pnpm exec tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
+    "helmet": "^8.1.0",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "ms": "^2.1.3",
+    "pino": "^9.6.0",
+    "pino-http": "^10.4.0",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.13.10",
+    "@types/supertest": "^6.0.3",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
+    "@vitest/coverage-v8": "^3.0.8",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^16.0.0",
+    "pino-pretty": "^13.0.0",
+    "prettier": "^3.5.3",
+    "prisma": "^6.5.0",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.29.1",
+    "vitest": "^3.0.8"
+  }
+}
