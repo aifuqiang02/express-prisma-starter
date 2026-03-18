@@ -3,13 +3,13 @@ import type { Request, Response } from "express";
 import { sendNoContent, sendSuccess } from "../../lib/http-response";
 import { prisma } from "../../lib/prisma";
 
+import { userPublicSelect } from "./user.select";
 import {
   deleteUser,
   getUserById,
   listUsers,
   updateUser,
 } from "./users.service";
-import { userPublicSelect } from "./user.select";
 
 export async function getCurrentUser(req: Request, res: Response) {
   const user = await prisma.user.findUnique({

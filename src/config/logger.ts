@@ -1,17 +1,36 @@
+import path from "node:path";
 import pino from "pino";
+import pretty from "pino-pretty";
 
 import { env } from "./env";
+import { DailyLogStream } from "../lib/daily-log-stream";
 
-export const logger = pino({
-  level: env.NODE_ENV === "development" ? "debug" : "info",
-  transport:
-    env.NODE_ENV === "development"
-      ? {
-          target: "pino-pretty",
-          options: {
-            colorize: true,
-            translateTime: "SYS:standard",
-          },
-        }
-      : undefined,
+const prettyStream =
+  env.NODE_ENV === "development"
+    ? pretty({
+        colorize: true,
+        translateTime: "SYS:standard",
+        ignore: "pid,hostname,requestId,req,res,responseTime",
+      })
+    : undefined;
+
+const fileStream = new DailyLogStream({
+  dir: path.resolve(process.cwd(), env.LOG_DIR),
+  prefix: "backend",
+  retentionDays: env.LOG_RETENTION_DAYS,
 });
+
+export const logger = pino(
+  {
+    base: undefined,
+    level: env.NODE_ENV === "development" ? "debug" : "info",
+    timestamp: pino.stdTimeFunctions.isoTime,
+  },
+  pino.multistream(
+    [
+      ...(prettyStream ? [{ level: "debug", stream: prettyStream }] : []),
+      { level: "debug", stream: fileStream },
+    ],
+    { dedupe: true },
+  ),
+);

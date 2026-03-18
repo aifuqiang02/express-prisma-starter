@@ -20,10 +20,10 @@ describe("error handler", () => {
     app.use(notFoundHandler);
     app.use(errorHandler);
 
-    const response = await request(app).get("/business-error").expect(200);
+    const response = await request(app).get("/business-error").expect(400);
 
     expect(response.body).toEqual({
-      code: 500,
+      code: 400,
       data: null,
       msg: "用户不存在",
     });

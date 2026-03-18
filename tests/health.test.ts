@@ -21,6 +21,7 @@ describe("health route", () => {
       },
       msg: "ok",
     });
+    expect(typeof response.headers["x-request-id"]).toBe("string");
     expect(typeof response.body.data.timestamp).toBe("string");
   });
 });

@@ -4,7 +4,7 @@ export const openApiDocument = {
     title: "Express Prisma Starter API",
     version: "0.1.0",
     description:
-      "Starter backend with Express, Prisma, PostgreSQL, and JWT auth. Success and general errors return HTTP 200, unauthorized returns HTTP 401.",
+      "Starter backend with Express, Prisma, PostgreSQL, and JWT auth.",
   },
   servers: [
     {
@@ -79,6 +79,7 @@ export const openApiDocument = {
         },
         responses: {
           "200": { description: "Registered with { code, data, msg }" },
+          "409": { description: "Email is already registered" },
         },
       },
     },
@@ -95,6 +96,7 @@ export const openApiDocument = {
         },
         responses: {
           "200": { description: "Logged in with { code, data, msg }" },
+          "401": { description: "Invalid email or password" },
         },
       },
     },
@@ -128,6 +130,7 @@ export const openApiDocument = {
         },
         responses: {
           "200": { description: "Logged out with { code, data, msg }" },
+          "404": { description: "Refresh token not found" },
         },
       },
     },
@@ -137,6 +140,7 @@ export const openApiDocument = {
         security: [{ bearerAuth: [] }],
         responses: {
           "200": { description: "Current user with { code, data, msg }" },
+          "401": { description: "Unauthorized" },
         },
       },
     },
@@ -161,9 +165,10 @@ export const openApiDocument = {
         ],
         responses: {
           "200": {
-            description:
-              "Paginated users with { code, data: { items, pagination }, msg } or business error with code 500",
+            description: "Paginated users with { code, data: { items, pagination }, msg }",
           },
+          "401": { description: "Unauthorized" },
+          "403": { description: "Forbidden" },
         },
       },
     },
@@ -181,6 +186,9 @@ export const openApiDocument = {
         ],
         responses: {
           "200": { description: "User detail with { code, data, msg }" },
+          "401": { description: "Unauthorized" },
+          "403": { description: "Forbidden" },
+          "404": { description: "User not found" },
         },
       },
       patch: {
@@ -204,6 +212,9 @@ export const openApiDocument = {
         },
         responses: {
           "200": { description: "User updated with { code, data, msg }" },
+          "401": { description: "Unauthorized" },
+          "403": { description: "Forbidden" },
+          "404": { description: "User not found" },
         },
       },
       delete: {
@@ -219,6 +230,9 @@ export const openApiDocument = {
         ],
         responses: {
           "200": { description: "User deleted with { code, data, msg }" },
+          "401": { description: "Unauthorized" },
+          "403": { description: "Forbidden" },
+          "404": { description: "User not found" },
         },
       },
     },

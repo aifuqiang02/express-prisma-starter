@@ -4,3 +4,5 @@ dist
 .DS_Store
 coverage
 pnpm-lock.yaml
+src/generated/prisma
+logs/

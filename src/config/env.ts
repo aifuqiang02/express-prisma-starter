@@ -8,6 +8,8 @@ const envSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: z.coerce.number().int().positive().default(3000),
+  LOG_DIR: z.string().min(1).default("./logs"),
+  LOG_RETENTION_DAYS: z.coerce.number().int().positive().default(30),
   DATABASE_URL: z.string().min(1),
   JWT_ACCESS_SECRET: z.string().min(16),
   JWT_REFRESH_SECRET: z.string().min(16),

@@ -121,10 +121,10 @@ describe("users routes", () => {
     const response = await request(app)
       .get("/api/v1/users")
       .set("Authorization", "Bearer user-token")
-      .expect(200);
+      .expect(403);
 
     expect(response.body).toEqual({
-      code: 500,
+      code: 403,
       data: null,
       msg: "Forbidden",
     });

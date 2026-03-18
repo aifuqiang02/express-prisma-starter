@@ -5,6 +5,7 @@ import type {
 } from "../../generated/prisma/index";
 import { AppError } from "../../lib/app-error";
 import { prisma } from "../../lib/prisma";
+
 import { userPublicSelect } from "./user.select";
 
 type ListUsersInput = {

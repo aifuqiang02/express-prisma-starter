@@ -50,6 +50,41 @@ tests/
 tools/
 ```
 
+## 日志
+
+当前模板默认启用了这套日志策略：
+
+- 每个请求进入时，只打印一行：
+  - `(requestId) METHOD URL`
+- 不再打印低价值的自动 `request completed`
+- 全局异常会打印错误堆栈和业务 details
+- Prisma 会打印一行可读 SQL
+- 日志同时输出到控制台和按日期切分的日志文件
+
+示例：
+
+```txt
+[2026-03-18 20:06:46.515 +0800] INFO: (7b564183-eef0-4d3a-bd86-03e3f6dd18d9) GET /api/v1/apps/app_36688252
+[2026-03-18 20:06:46.563 +0800] DEBUG: select * from apps WHERE (apps.id = 'app_36688252' AND 1=1) LIMIT 1 OFFSET 0
+```
+
+日志相关环境变量：
+
+- `LOG_DIR`
+  - 日志目录，默认 `./logs`
+- `LOG_RETENTION_DAYS`
+  - 日志保留天数，默认 `30`
+
+日志文件命名规则：
+
+- `backend-YYYY-MM-DD.log`
+
+说明：
+
+- SQL 日志默认不强行绑定 `requestId`
+- 原因是 Prisma 原生 query event 不稳定保留请求上下文
+- 模板采用“请求先打一行入口日志，再看后续 SQL”的方式定位问题
+
 ## 快速开始
 
 1. 安装依赖
@@ -104,6 +139,24 @@ GET http://localhost:3000/api/v1/health
 GET http://localhost:3000/api/v1/docs
 GET http://localhost:3000/api/v1/openapi.json
 ```
+
+## 套用模板后建议优先修改
+
+- 删除 `.git` 目录
+  - 避免把模板仓库的 Git 历史一并带到新项目中。
+- `package.json`
+  - 修改 `name`、`version`、`description` 等基础项。
+- `.env.example` 和实际环境变量文件
+  - 修改 `DATABASE_URL`
+  - 修改 JWT 密钥
+  - 根据项目需要补充端口、日志、跨域等配置
+  - 检查 `LOG_DIR`、`LOG_RETENTION_DAYS` 是否符合部署环境需求
+- `prisma/schema.prisma`
+  - 根据你的业务重新定义数据模型。
+- `src/config`
+  - 检查应用名、接口前缀、日志、鉴权相关默认配置是否符合新项目需求。
+
+套用完成后，建议执行一次 `pnpm install && pnpm lint && pnpm type-check && pnpm test && pnpm build` 做自检。
 
 ## 常用命令
 
@@ -199,8 +252,8 @@ pm2 startup
 说明：
 
 - 成功时 `code = 200`，HTTP 状态码为 `200`
-- 未授权时 `code = 401`，HTTP 状态码为 `401`
-- 其他错误时 `code = 500`，HTTP 状态码为 `200`
+- 失败时 `code` 与 HTTP 状态码保持一致
+- 例如参数错误 `400`、未授权 `401`、无权限 `403`、未找到 `404`、服务错误 `500`
 
 业务错误建议：
 
@@ -210,7 +263,7 @@ pm2 startup
 
 ```json
 {
-  "code": 500,
+  "code": 400,
   "data": null,
   "msg": "用户不存在"
 }
@@ -295,6 +348,9 @@ pnpm build
 - 构建时会复制到 `dist/src/generated`
 - 代码层字段保持驼峰命名，数据库表名和列名统一使用 `snake_case`
 - 查询用户等敏感模型时，默认不直接查全字段，统一使用共享 `select` 常量控制返回字段
+- 每个请求会生成或透传 `X-Request-Id`，用于日志链路追踪
+- Prisma 查询日志会格式化成单行可读 SQL
+- 日志默认同时输出到控制台和本地按日切分文件
 - PM2 配置文件：
   [ecosystem.config.cjs](/D:/git-projects/express-prisma-starter/ecosystem.config.cjs)
 - Swagger 文档地址：`/api/v1/docs`
