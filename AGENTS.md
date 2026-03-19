@@ -34,6 +34,12 @@
 
 - `LOG_DIR`
 - `LOG_RETENTION_DAYS`
+- `LOG_LEVEL`
+
+默认要求：
+
+- 没显式配置时，默认也应该能看到 SQL
+- 生产环境不要因为默认级别过高而把 SQL 完全吞掉
 
 ## 开发约定
 
@@ -46,6 +52,19 @@
   - `src/lib/prisma.ts`
   - `src/middlewares/error.ts`
   - `src/app.ts`
+
+## 部署约定
+
+- 不要同时保留“手工启动进程”和 `PM2` 进程
+- `ecosystem.config.cjs` 中的端口来源要明确
+  - 如果写死在 `env.PORT`，就不要再假设 `.env` 会覆盖它
+- 如果修改了关键环境变量或端口，优先使用：
+  - `pm2 delete <app>`
+  - `pm2 start ecosystem.config.cjs`
+- 如果本地和服务器不是同一平台，`Prisma Client` 优先在服务器重新生成
+- 正式环境不要只依赖 `db push`
+  - 必须维护 migration，并执行 `prisma migrate deploy`
+- 重复部署建议使用“单文件归档上传 + 服务器解包”，不要长期依赖逐文件上传
 
 ## 初始化后建议检查
 

@@ -164,6 +164,10 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -181,6 +185,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -189,8 +194,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String         @id @default(cuid())\n  email         String         @unique\n  passwordHash  String         @map(\"password_hash\")\n  name          String\n  role          UserRole       @default(USER)\n  status        UserStatus     @default(ACTIVE)\n  refreshTokens RefreshToken[]\n  createdAt     DateTime       @default(now()) @map(\"created_at\")\n  updatedAt     DateTime       @updatedAt @map(\"updated_at\")\n\n  @@map(\"users\")\n}\n\nmodel RefreshToken {\n  id        String    @id @default(cuid())\n  userId    String    @map(\"user_id\")\n  token     String    @unique\n  expiresAt DateTime  @map(\"expires_at\")\n  revokedAt DateTime? @map(\"revoked_at\")\n  createdAt DateTime  @default(now()) @map(\"created_at\")\n  updatedAt DateTime  @updatedAt @map(\"updated_at\")\n  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map(\"refresh_tokens\")\n}\n\nenum UserRole {\n  USER\n  ADMIN\n}\n\nenum UserStatus {\n  ACTIVE\n  DISABLED\n}\n",
-  "inlineSchemaHash": "002b936a476896ecee4c98507e0c9000809c6b1a51d5b507e87053d86cd3b972",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String         @id @default(cuid())\n  email         String         @unique\n  passwordHash  String         @map(\"password_hash\")\n  name          String\n  role          UserRole       @default(USER)\n  status        UserStatus     @default(ACTIVE)\n  refreshTokens RefreshToken[]\n  createdAt     DateTime       @default(now()) @map(\"created_at\")\n  updatedAt     DateTime       @updatedAt @map(\"updated_at\")\n\n  @@map(\"users\")\n}\n\nmodel RefreshToken {\n  id        String    @id @default(cuid())\n  userId    String    @map(\"user_id\")\n  token     String    @unique\n  expiresAt DateTime  @map(\"expires_at\")\n  revokedAt DateTime? @map(\"revoked_at\")\n  createdAt DateTime  @default(now()) @map(\"created_at\")\n  updatedAt DateTime  @updatedAt @map(\"updated_at\")\n  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map(\"refresh_tokens\")\n}\n\nenum UserRole {\n  USER\n  ADMIN\n}\n\nenum UserStatus {\n  ACTIVE\n  DISABLED\n}\n",
+  "inlineSchemaHash": "6d83f2b98128aa4d09e6df7dbe922ed937e228884c4fa99863b66519470975a5",
   "copyEngine": true
 }
 config.dirname = '/'

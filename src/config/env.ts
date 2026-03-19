@@ -7,6 +7,9 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
+  LOG_LEVEL: z
+    .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
+    .optional(),
   PORT: z.coerce.number().int().positive().default(3000),
   LOG_DIR: z.string().min(1).default("./logs"),
   LOG_RETENTION_DAYS: z.coerce.number().int().positive().default(30),
@@ -23,4 +26,7 @@ if (!parsed.success) {
   throw new Error(`Invalid environment variables: ${parsed.error.message}`);
 }
 
-export const env = parsed.data;
+export const env = {
+  ...parsed.data,
+  LOG_LEVEL: parsed.data.LOG_LEVEL ?? "debug",
+};

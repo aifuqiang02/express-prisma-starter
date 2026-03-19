@@ -237,6 +237,49 @@ pm2 startup
 - Swagger 文档默认不要暴露到公网
 - PostgreSQL 做定期备份
 
+### 部署踩坑清单
+
+这几个点在真实项目里很容易出问题，建议新项目一开始就按这个清单规避：
+
+- `PM2` 里的 `env.PORT` 会覆盖 `.env`
+  - 如果端口要由 `.env` 决定，就不要再在 `ecosystem.config.cjs` 里写另一个值
+- `PM2 restart` 可能沿用旧环境变量
+  - 改了端口或关键环境变量后，必要时使用 `pm2 delete + pm2 start`
+- 不要混用手工启动进程和 `PM2`
+  - 否则很容易出现旧进程占端口，`PM2` 新进程启动失败
+- `Prisma` 有平台差异
+  - 如果本地是 Windows、服务器是 Linux，不能想当然地复用本地生成产物
+  - 正式部署建议在线上执行 `prisma generate`
+- 只做了本地 `db push`，没有正式 migration，会导致线上结构漂移
+  - 正式项目必须维护 migration，并在线上执行 `prisma migrate deploy`
+- 生产环境 SQL 日志看不到时，先查：
+  - `LOG_LEVEL`
+  - 控制台流和文件流的级别
+  - SQL 是否只打到某一个输出通道
+- 重复部署建议使用“单文件归档上传 + 服务器解包”
+  - 通常比逐文件上传更稳、更快
+
+### 后端部署建议
+
+如果后端需要长期迭代部署，建议项目内补一套 `deploy/` 脚本，并遵循这条顺序：
+
+1. 本地构建
+2. 归档部署包
+3. 上传单个包到服务器
+4. 服务器解包替换
+5. 服务器执行 `pnpm install`
+6. 服务器执行 `pnpm exec prisma generate`
+7. 服务器执行 `pnpm exec prisma migrate deploy`
+8. 用 `PM2` 启动或重启
+
+后端部署完成后，至少检查：
+
+- 实际监听端口是否正确
+- `.env` 是否保留
+- migration 是否执行
+- `Prisma Client` 是否已按目标平台生成
+- 日志里是否能看到请求入口、错误和 SQL
+
 ## 接口说明
 
 统一响应格式：

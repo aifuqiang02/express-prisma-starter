@@ -23,7 +23,7 @@ const fileStream = new DailyLogStream({
 export const logger = pino(
   {
     base: undefined,
-    level: env.NODE_ENV === "development" ? "debug" : "info",
+    level: env.LOG_LEVEL,
     timestamp: pino.stdTimeFunctions.isoTime,
   },
   pino.multistream(
